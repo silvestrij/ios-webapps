@@ -1,0 +1,29 @@
+n.b. in particular - the bit about no scroll!
+http://matt.might.net/articles/how-to-native-iphone-ipad-apps-in-javascript/
+
+
+URL explains all....
+www.bennadel.com/blog/1197-Defaulting-To-The-Numeric-Keyboard-On-The-iPhone.htm
+
+...w/comment FULL OF WIN:
+http://developer.apple.com/library/safari/#codinghowtos/Mobile/UserExperience/_index.html
+Text: <input type="text" /> <!-- display a standard keyboard -->
+Telephone: <input type="tel" /> <!-- display a telephone keypad -->
+URL: <input type="url" /> <!-- display a URL keyboard -->
+Email: <input type="email" /> <!-- display an email keyboard -->
+Zip Code: <input type="text" pattern="[0-9]*" /> <!-- display a numeric keyboard -->
+
+...and:
+<!-- display a numeric keyboard with decimal-->
+<input type="text" pattern="[0-9.]*" />
+
+more betterer:
+http://www.bennadel.com/blog/1721-Default-To-The-Numeric-Email-And-URL-Keyboards-On-The-iPhone.htm
+
+also see:
+http://developer.apple.com/library/safari/#documentation/AppleApplications/Reference/SafariWebContent/Introduction/Introduction.html#//apple_ref/doc/uid/TP40002051
+
+...looks to be a good resource, but obviously for pay:
+Building IPhone Apps with HTML, CSS, and JavaScript: Making App Store Apps ... By Jonathan Stark
+
+http://stackoverflow.com/questions/5771785/how-can-you-autofocus-on-a-form-field-in-iphone-safari

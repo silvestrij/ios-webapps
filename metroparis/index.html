@@ -1,0 +1,180 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" manifest="main.manifest">
+<head>
+<title>Metro Paris</title>
+
+<meta http-equiv="content-type" content="text/html; charset=windows-1252">
+
+<meta name="viewport" content="user-scalable=no, width=device-width" />
+<meta name="apple-mobile-web-app-capable" content="yes" /> 
+<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+
+<link rel="apple-touch-icon" href="metroparis-v1.1.png" />
+<!--<link rel="apple-touch-icon" href="metrocard-js-icon.png" />-->
+
+<style type="text/css">
+h1{
+	font-size: 1.25em;
+
+}
+#last_swipe_div{
+}
+
+.details{
+	font-size: .75em;
+}
+
+input[type="button"]{
+	width: 150px;
+	font-size: 1.5em;
+}
+
+.section_visible{
+	display: block;
+}
+
+.section_hidden{
+	display: none;
+}
+</style>
+
+<script type="text/javascript" src="countdown.js"></script> 
+<script type="text/javascript" src="date.js"></script> 
+
+
+<script type="text/javascript">
+var last_swipe_time;
+var last_swipe_type;
+
+function repaint_page(){
+	var last_swipe_time_str=localStorage.swipe_time;
+	last_swipe_type=localStorage.swipe_type;
+
+	if(last_swipe_time_str){
+		last_swipe_time=new Date();
+		last_swipe_time=Date.parse(localStorage.swipe_time);
+
+		var input_ptr=document.getElementById('last_swipe_id');
+		input_ptr.innerHTML=last_swipe_time.toString("yyyy-MM-dd HH:mm:ss");
+
+		var xfer_expires=last_swipe_time.clone();
+		xfer_expires.addMinutes(90);
+		//xfer_expires.addHours(2);
+
+
+		var current_time=new Date().setTimeToNow();
+		if(is_xfer_avail('status', current_time)){
+			document.getElementById("xfer_til_div").className='section_visible';
+			input_ptr=document.getElementById('xfer_til_id');
+			input_ptr.innerHTML=xfer_expires.toString("yyyy-MM-dd HH:mm:ss");
+
+			start_countdown(xfer_expires);
+		}else{
+			document.getElementById("xfer_til_div").className='section_hidden';
+			document.getElementById("cntdwn").innerHTML = FinishMessage;
+		}
+	}
+}//end function repaint_page()
+
+function swipe(in_type){
+
+/*
+	console.log("in:",in_type);
+	console.log("last_type:", last_swipe_type);
+	*/
+
+	stop_countdown();
+
+	var swipe_time_now=new Date().setTimeToNow();
+	swipe_time_now.addMinutes(-1);
+
+	//console.log('last', last_swipe_type, 'req', in_type);
+	var xfer_avail = is_xfer_avail(in_type,swipe_time_now);
+	if(xfer_avail){
+		localStorage.swipe_type='xfer';
+	}else{
+		localStorage.swipe_type=in_type;
+	}
+	//console.log('avail?', xfer_avail);
+	//console.log('last_swipe now', localStorage.swipe_type);
+
+	localStorage.swipe_time=swipe_time_now.toString("yyyy-MM-dd HH:mm:ss");
+
+	repaint_page();
+}//end function swipe(in_type)
+
+function is_xfer_avail(in_type, in_time){
+
+	if(last_swipe_time){
+		var xfer_expires=last_swipe_time.clone();
+		xfer_expires.addMinutes(90);
+		//xfer_expires.addHours(2);
+		if(in_time.isBefore(xfer_expires)){
+			if((in_type == "status") && (last_swipe_type != "xfer")){
+				return true;
+			}else{
+				switch(last_swipe_type){
+					case "xfer":
+						return false;
+					break;
+					case "subway":
+						if (in_type == "bus"){
+							return true;
+						}else{
+							return false;
+						}
+					break;
+					case "bus":
+						return true;
+					break;
+				}//end switch(last_swipe_type)
+			}//end if/else((in_type == "status") && (last_swipe_type != "xfer"))
+		}else{
+			return false;
+		}//end if/else(in_time.isBefore(xfer_expires))
+	}else{
+		return false;
+	}//end if/else(last_swipe_time)
+}//end function is_xfer_avail(in_type)
+
+
+//Countdown code: [globals]
+	FinishMessage = "No xfers available";
+	DisplayFormat = "%%H%% h %%M%% m %%S%% s";
+	var countdown_timeout;
+
+
+function BlockMove(event) {
+	// Tell Safari not to move the window.
+	event.preventDefault() ;
+}
+</script>
+
+
+</head>
+<body onload="repaint_page();" ontouchmove="BlockMove(event);">
+
+<h1>Metrocard status</h1>
+
+<!--<p>Card balance: TBD</p>-->
+
+<p>
+	<input type='button' value='subway' onclick="swipe('subway');return false;"></input>
+	<input type='button' value='bus' onclick="swipe('bus');return false;"></input>
+</p>
+<div id='last_swipe_div' class='details'>
+	Last swipe: <span id='last_swipe_id'></span><br>
+</div>
+
+<p>Time remaining:<br>
+<span id='cntdwn'></span>
+</p>
+
+<div id='xfer_til_div'>
+<span class='details'>Xfer 'til:</span> <span id='xfer_til_id' class='details'></span>
+</div>
+
+
+<!--<p><a href="SQL_Auto_Print_Live.html">Live Output</a> / <a href="SQL_Auto_Print_Time.html">v2</a> | <a href="SQL_Populate.html">Populate</a></p>-->
+
+</body></html>
